@@ -4,12 +4,16 @@ class Api::v1::ReservationsController < ApplicationController
     render json: @reservations
   end
 
-  private
-
-  # Use callbacks to share common setup or constraints between actions.
-  def set_reservation
-    @reservation = Reservation.find(params[:id])
+  def create
+    @reservation = Reservation.new(reservation_params)
+    if @reservation.save
+      render json: @reservation, status: :created
+    else
+      render json: @reservation.errors, status: :unprocessable_entity
+    end
   end
+
+  private
 
   # Only allow a list of trusted parameters through.
   def reservation_params

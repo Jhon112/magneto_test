@@ -1,10 +1,5 @@
 class Api::V1::MoviesController < ApplicationController
   def index
-    @movies = Movie.all
-    render json: @movies
-  end
-
-  def find_movies
     if params[:start_date] && params[:end_date]
       start_params = params[:start_date]
       end_params = params[:end_date]
@@ -12,16 +7,18 @@ class Api::V1::MoviesController < ApplicationController
       start_date = Date.new(start_params["year"].to_i, start_params["month"].to_i, start_params["day"].to_i)
       end_date = Date.new(end_params["year"].to_i, end_params["month"].to_i, end_params["day"].to_i)
       @movies = Movie.where(["start_date < ? AND end_date > ?", start_date, end_date])
-      render json: @movies
+    else
+      @movies = Movie.all
     end
+    render json: @movies
   end
 
   def create
     @movie = Movie.new(movie_params)
     if @movie.save
-      render json: @article, status: :created
+      render json: @movie, status: :created
     else
-      render json: @article.errors, status: :unprocessable_entity
+      render json: @movie.errors, status: :unprocessable_entity
     end
   end
 
