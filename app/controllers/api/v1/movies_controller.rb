@@ -1,12 +1,15 @@
 class Api::V1::MoviesController < ApplicationController
+  skip_before_action :verify_authenticity_token
+
   def index
     if params[:start_date] && params[:end_date]
-      start_params = params[:start_date]
-      end_params = params[:end_date]
+      start_params = params[:start_date].split("-")
+      end_params = params[:end_date].split("-")
 
-      start_date = Date.new(start_params["year"].to_i, start_params["month"].to_i, start_params["day"].to_i)
-      end_date = Date.new(end_params["year"].to_i, end_params["month"].to_i, end_params["day"].to_i)
-      @movies = Movie.where(["start_date < ? AND end_date > ?", start_date, end_date])
+      start_date = Date.new(start_params[0].to_i, start_params[1].to_i, start_params[2].to_i)
+      end_date = Date.new(end_params[0].to_i, end_params[1].to_i, end_params[2].to_i)
+
+      @movies = Movie.where(["start_date <= ? AND end_date >= ?", start_date, end_date])
     else
       @movies = Movie.all
     end
